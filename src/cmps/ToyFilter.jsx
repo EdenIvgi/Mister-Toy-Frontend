@@ -51,6 +51,12 @@ export function ToyFilter({ filterBy, onSetFilter }) {
     onSetFilter({ labels })
   }
 
+  function onSortChange({ target }) {
+    const sortBy = target.value
+    setLocalFilter(prev => ({ ...prev, sortBy }))
+    onSetFilter({ sortBy })
+  }
+
   return (
     <section className="toy-filter">
       <label style={{ display: 'inline-flex', gap: 8, alignItems: 'center', marginInlineEnd: 12 }}>
@@ -97,6 +103,16 @@ export function ToyFilter({ filterBy, onSetFilter }) {
           ))}
         </ul>
       </fieldset>
+
+      <label style={{ display: 'inline-flex', gap: 8, alignItems: 'center', marginInlineStart: 12 }}>
+        <span>Sort by:</span>
+        <select value={localFilter.sortBy || ''} onChange={onSortChange}>
+          <option value="">None</option>
+          <option value="name">Name (A→Z)</option>
+          <option value="price">Price (Low→High)</option>
+          <option value="created">Created (New→Old)</option>
+        </select>
+      </label>
     </section>
   )
 }
