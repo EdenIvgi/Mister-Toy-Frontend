@@ -59,7 +59,7 @@ export function ToyFilter({ filterBy, onSetFilter }) {
 
   return (
     <section className="toy-filter">
-      <label style={{ display: 'inline-flex', gap: 8, alignItems: 'center', marginInlineEnd: 12 }}>
+      <label className="group">
         <span>Search:</span>
         <input
           type="text"
@@ -70,7 +70,17 @@ export function ToyFilter({ filterBy, onSetFilter }) {
         />
       </label>
 
-      <label style={{ display: 'inline-flex', gap: 8, alignItems: 'center', marginInlineEnd: 12 }}>
+            <label className="group">
+        <span>Sort by:</span>
+        <select value={localFilter.sortBy || ''} onChange={onSortChange}>
+          <option value="">None</option>
+          <option value="name">Name (A→Z)</option>
+          <option value="price">Price (Low→High)</option>
+          <option value="created">Created (New→Old)</option>
+        </select>
+      </label>
+
+      <label className="group">
         <span>Stock:</span>
         <select
           value={
@@ -86,12 +96,12 @@ export function ToyFilter({ filterBy, onSetFilter }) {
         </select>
       </label>
 
-      <fieldset className="labels" style={{ display:'inline-block', marginInlineStart: 12 }}>
+      <fieldset className="labels">
         <legend>Labels</legend>
-        <ul className="clean-list" style={{ display:'grid', gap:4, gridTemplateColumns:'repeat(auto-fit,minmax(140px,1fr))', padding:0 }}>
+        <ul className="labels-grid clean-list">
           {LABELS.map(label => (
-            <li key={label} style={{ listStyle:'none' }}>
-              <label style={{ display:'flex', gap:6, alignItems:'center' }}>
+            <li key={label}>
+              <label className="group">
                 <input
                   type="checkbox"
                   checked={localFilter.labels?.includes(label) || false}
@@ -104,15 +114,7 @@ export function ToyFilter({ filterBy, onSetFilter }) {
         </ul>
       </fieldset>
 
-      <label style={{ display: 'inline-flex', gap: 8, alignItems: 'center', marginInlineStart: 12 }}>
-        <span>Sort by:</span>
-        <select value={localFilter.sortBy || ''} onChange={onSortChange}>
-          <option value="">None</option>
-          <option value="name">Name (A→Z)</option>
-          <option value="price">Price (Low→High)</option>
-          <option value="created">Created (New→Old)</option>
-        </select>
-      </label>
+
     </section>
   )
 }
