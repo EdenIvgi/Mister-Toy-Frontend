@@ -4,6 +4,9 @@ import { loadToys, removeToyOptimistic, setFilterBy } from "../store/actions/toy
 import { ToyList } from "../cmps/ToyList.jsx"
 import { ToyFilter } from "../cmps/ToyFilter.jsx"
 
+import { Link } from 'react-router-dom' 
+
+
 export default function ToyIndex() {
   const { toys, isLoading, filterBy } = useSelector(state => state.toyModule)
 
@@ -24,6 +27,7 @@ export default function ToyIndex() {
     <section className="toy-index">
       <h2>Toy Shop</h2>
 
+      <Link to="/toy/edit" className="btn">Add Toy</Link>
       <ToyFilter filterBy={filterBy} onSetFilter={onSetFilter} />
 
       {isLoading && <p>Loading...</p>}
