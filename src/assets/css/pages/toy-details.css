@@ -1,0 +1,35 @@
+.toy-details {
+  display: grid;
+  gap: 16px;
+  padding: 20px;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.toy-details__header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.toy-details__header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.toy-details__img {
+  max-width: 240px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+.toy-details__actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+/* התאמה לצ'אט כשהוא נפתח בחלון */
+.popup .chat {
+  max-height: 400px;
+}

@@ -1,0 +1,22 @@
+/* SETUP */
+@import './setup/reset.css';
+
+/* BASE */
+@import './base/base.css';
+@import './base/utilities.css';
+
+/* COMPONENTS */
+@import './cmps/buttons.css';
+@import './cmps/user-msg.css';
+@import './cmps/filter.css';
+@import './cmps/list.css';
+@import './cmps/popup.css';
+@import './cmps/chat.css';
+@import './cmps/app-header.css';
+
+
+/* PAGES */
+@import './pages/toy-details.css';
+@import './pages/toy-index.css';
+@import './pages/toy-edit.css'; 
+

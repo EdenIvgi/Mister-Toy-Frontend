@@ -1,0 +1,12 @@
+.toy-list{
+  display:grid; gap:12px;
+  grid-template-columns:repeat(auto-fill, minmax(260px, 1fr));
+}
+.toy-list > li{ list-style:none; }
+
+.toy-preview{
+  background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+  padding:14px; display:grid; gap:8px;
+  box-shadow:0 1px 0 rgba(0,0,0,.03);
+}
+.toy-preview .actions{ display:flex; gap:8px; margin-top:6px; }

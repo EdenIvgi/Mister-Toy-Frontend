@@ -1,0 +1,14 @@
+.toy-filter{
+  display:flex; flex-wrap:wrap; gap:12px; align-items:center;
+  margin:12px 0 18px;
+}
+.toy-filter .group{ display:inline-flex; gap:8px; align-items:center; }
+.toy-filter input[type="text"],
+.toy-filter select{
+  padding:8px 10px; border:1px solid #dcdce5; border-radius:8px; background:#fff;
+}
+.labels{ display:inline-block; }
+.labels legend{ font-weight:700; margin-bottom:6px; }
+.labels .labels-grid{
+  display:grid; gap:6px; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr));
+}

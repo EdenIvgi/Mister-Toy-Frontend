@@ -1,0 +1,8 @@
+.user-msg{
+  position:fixed; right:24px; bottom:24px;
+  padding:10px 16px; border-radius:10px; color:#fff; font-weight:700;
+  box-shadow:0 10px 20px rgba(0,0,0,.15);
+}
+.user-msg.success{ background:var(--success); }
+.user-msg.error{ background:var(--error); }
+.user-msg button{ all:unset; cursor:pointer; margin-inline-start:10px; }

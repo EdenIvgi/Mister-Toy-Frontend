@@ -1,0 +1,45 @@
+.toy-index {
+  display: grid;
+  gap: 20px;
+  padding: 20px;
+}
+
+h2{
+justify-self: center; 
+   font-size:4rem;
+}
+
+.toy-index .toy-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-end;
+}
+
+.toy-index .toy-filter .labels {
+  flex-basis: 100%;
+}
+
+.toy-index .toy-filter .labels ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.toy-index .toy-filter .labels li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.toy-index .toy-filter .add-toy {
+  margin-left: auto; 
+}
+
+.toy-index .toy-filter .add-toy .btn {
+  min-width: auto;
+  padding: 6px 14px;
+}
