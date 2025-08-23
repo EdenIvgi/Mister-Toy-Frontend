@@ -25,10 +25,11 @@ export default function ToyIndex() {
 
   return (
     <section className="toy-index">
-      <h2>Toy Shop</h2>
+<div>
 
       <Link to="/toy/edit" className="btn">Add Toy</Link>
       <ToyFilter filterBy={filterBy} onSetFilter={onSetFilter} />
+</div>
 
       {isLoading && <p>Loading...</p>}
       {!isLoading && <ToyList toys={toys} onRemoveToy={onRemoveToy} />}

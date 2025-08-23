@@ -1,0 +1,25 @@
+.app-header {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  background-color: var(--card);
+  border-bottom: 1px solid var(--border);
+}
+
+.app-header .logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.app-header .logo img {
+  width: 36px;
+  height: 36px;
+}
+
+.app-header .logo h1 {
+  font-size: 1.5rem;
+  margin: 0;
+}
