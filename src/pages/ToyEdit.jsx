@@ -16,10 +16,7 @@ export default function ToyEdit() {
   function loadToy() {
     toyService.get(toyId)
       .then(toy => setToyToEdit(toy))
-      .catch(err => {
-        console.log('Had issues in toy edit', err)
-        navigate('/toy')
-      })
+      .catch(() => navigate('/toy'))
   }
 
   function handleChange({ target }) {
@@ -39,18 +36,15 @@ export default function ToyEdit() {
         showSuccessMsg('Toy Saved!')
         navigate('/toy')
       })
-      .catch(err => {
-        console.log('Had issues in toy save', err)
-        showErrorMsg('Had issues in toy save')
-      })
+      .catch(() => showErrorMsg('Had issues in toy save'))
   }
 
   return (
     <section className="toy-edit">
       <h2>{toyToEdit._id ? 'Edit' : 'Add'} Toy</h2>
 
-      <form onSubmit={onSaveToy}>
-        <label htmlFor="name">Name : </label>
+      <form onSubmit={onSaveToy} className="toy-edit__form">
+        <label htmlFor="name">Name :</label>
         <input
           type="text"
           name="name"
@@ -60,7 +54,7 @@ export default function ToyEdit() {
           onChange={handleChange}
         />
 
-        <label htmlFor="price">Price : </label>
+        <label htmlFor="price">Price :</label>
         <input
           type="number"
           name="price"
@@ -71,7 +65,7 @@ export default function ToyEdit() {
           min="0"
         />
 
-        <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <label className="checkbox-line">
           <input
             type="checkbox"
             name="inStock"
@@ -81,7 +75,7 @@ export default function ToyEdit() {
           In stock
         </label>
 
-        <label htmlFor="imgUrl">Image URL : </label>
+        <label htmlFor="imgUrl">Image URL :</label>
         <input
           type="text"
           name="imgUrl"
@@ -91,10 +85,9 @@ export default function ToyEdit() {
           onChange={handleChange}
         />
 
-        {/* labels נוסיף בהמשך כ-multiselect */}
-        <div style={{ marginTop: 12, display: 'flex', gap: 8 }}>
-          <button>{toyToEdit._id ? 'Save' : 'Add'}</button>
-          <Link to="/toy">Cancel</Link>
+        <div className="form-actions">
+          <button className="btn primary">{toyToEdit._id ? 'Save' : 'Add'}</button>
+          <Link to="/toy" className="btn">Cancel</Link>
         </div>
       </form>
     </section>
