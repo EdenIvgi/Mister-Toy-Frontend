@@ -29,7 +29,6 @@
   margin-top: 12px;
 }
 
-/* התאמה לצ'אט כשהוא נפתח בחלון */
 .popup .chat {
-  max-height: 400px;
+  max-height: 600px;
 }

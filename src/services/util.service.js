@@ -36,7 +36,7 @@ function makeLorem(size = 100) {
 function getRandomIntInclusive(min, max) {
     min = Math.ceil(min)
     max = Math.floor(max)
-    return Math.floor(Math.random() * (max - min + 1)) + min // כולל קצוות
+    return Math.floor(Math.random() * (max - min + 1)) + min
 }
 
 function saveToStorage(key, value) {

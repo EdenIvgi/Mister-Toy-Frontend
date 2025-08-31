@@ -26,28 +26,23 @@ export const toyService = {
     getEmptyToy,
 }
 
-// List + filter + sort
 function query(filterBy = {}) {
     return storageService.query(STORAGE_KEY).then((toys) => {
         let res = toys
 
-        // filter by name
         if (filterBy.name) {
             const regex = new RegExp(filterBy.name, 'i')
             res = res.filter((toy) => regex.test(toy.name))
         }
 
-        // filter by inStock (tri-state: true/false/null|undefined -> all)
         if (filterBy.inStock !== undefined && filterBy.inStock !== null) {
             res = res.filter((toy) => toy.inStock === filterBy.inStock)
         }
 
-        // filter by labels (must include all selected)
         if (Array.isArray(filterBy.labels) && filterBy.labels.length) {
             res = res.filter((toy) => filterBy.labels.every((l) => toy.labels.includes(l)))
         }
 
-        // sort
         if (filterBy.sortBy) {
             switch (filterBy.sortBy) {
                 case 'name':
@@ -57,7 +52,6 @@ function query(filterBy = {}) {
                     res.sort((a, b) => a.price - b.price)
                     break
                 case 'created':
-                    // newest first
                     res.sort((a, b) => b.createdAt - a.createdAt)
                     break
                 default:
@@ -78,10 +72,8 @@ function remove(toyId) {
 }
 
 function save(toy) {
-    // update
     if (toy._id) return storageService.put(STORAGE_KEY, toy)
 
-    // create
     const toSave = {
         ...getEmptyToy(),
         ...toy,
@@ -102,11 +94,9 @@ function getEmptyToy() {
 }
 
 function getDefaultFilter() {
-    // sortBy: '', 'name' | 'price' | 'created'
     return { name: '', inStock: null, labels: [], sortBy: '' }
 }
 
-// ---- seed helpers ----
 function _createToys() {
     let toys = JSON.parse(localStorage.getItem(STORAGE_KEY))
     if (!toys || !toys.length) {

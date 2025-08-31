@@ -114,7 +114,6 @@ export function ToyFilter({ filterBy, onSetFilter }) {
         </ul>
       </fieldset>
 
-
     </section>
   )
 }
