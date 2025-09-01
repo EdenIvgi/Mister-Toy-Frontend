@@ -20,21 +20,24 @@ export function About() {
 
   return (
     <section className="google-map">
-      <h1>Our Branches</h1>
+      <h3>Our Branches</h3>
 
-      <div className="branches-btns">
-        {branches.map(branch => (
-          <button key={branch.name} onClick={() => goToBranch(branch)}>
-            {branch.name}
-          </button>
-        ))}
-      </div>
+<div className="branches-btns">
+  {branches.map(branch => (
+    <button
+      key={branch.name}
+      className={`btn${selectedBranch?.name === branch.name ? ' active' : ''}`}
+      onClick={() => goToBranch(branch)}
+      aria-pressed={selectedBranch?.name === branch.name}
+    >
+      {branch.name}
+    </button>
+  ))}
+</div>
 
       <APIProvider apiKey={API_KEY}>
         <Map
           mapId="DEMO_MAP_ID"
-
-          style={{ width: '100%', height: '500px' }}
           defaultCenter={{ lat: 32.0853, lng: 34.7818 }}
           defaultZoom={10}
           center={selectedBranch ? { lat: selectedBranch.lat, lng: selectedBranch.lng } : undefined}

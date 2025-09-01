@@ -1,4 +1,3 @@
-// src/pages/Dashboard.jsx
 import { useEffect, useState } from 'react'
 import { Bar, Pie, Line } from 'react-chartjs-2'
 import {
@@ -74,7 +73,6 @@ export function Dashboard() {
 
   return (
     <section className="dashboard">
-      <h1>Dashboard</h1>
 
       <div>
         <h2>Prices per Label</h2>

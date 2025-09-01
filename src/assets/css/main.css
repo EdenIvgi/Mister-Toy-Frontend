@@ -16,6 +16,7 @@
 
 
 /* PAGES */
+@import './pages/about.css';
 @import './pages/toy-details.css';
 @import './pages/toy-index.css';
 @import './pages/toy-edit.css'; 

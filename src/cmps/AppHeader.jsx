@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom"
+import { Link, NavLink } from "react-router-dom"
 import logo from "../assets/react.svg" 
 
 export function AppHeader() {
@@ -9,9 +9,10 @@ export function AppHeader() {
       </Link>
         <h1>Mister Toy</h1>
 
-              <nav className="main-nav">
-        <Link to="/About">About</Link>
-        <Link to="/Dashboard">Dashboard</Link>
+        <nav className="main-nav">
+        <NavLink to="/" className={({isActive}) => `nav-link${isActive ? ' active' : ''}`}>Store</NavLink>
+        <NavLink to="/Dashboard" className={({isActive}) => `nav-link${isActive ? ' active' : ''}`}>Dashboard</NavLink>
+        <NavLink to="/About" className={({isActive}) => `nav-link${isActive ? ' active' : ''}`}>About</NavLink>
       </nav>
 
     </header>
