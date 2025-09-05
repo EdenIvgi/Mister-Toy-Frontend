@@ -5,13 +5,15 @@ import { ToyList } from "../cmps/ToyList.jsx"
 import { ToyFilter } from "../cmps/ToyFilter.jsx"
 
 import { Link } from 'react-router-dom' 
+import { showErrorMsg } from "../services/event-bus.service.js"
 
 
 export default function ToyIndex() {
   const { toys, isLoading, filterBy } = useSelector(state => state.toyModule)
 
   useEffect(() => {
-    loadToys()
+    loadToys().catch(err => {
+      showErrorMsg('Cannot load toys')})
   }, [])
 
   function onRemoveToy(toyId) {
