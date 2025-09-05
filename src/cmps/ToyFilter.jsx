@@ -1,119 +1,108 @@
-import { useEffect, useMemo, useState } from "react"
-import { utilService } from "../services/util.service.js"
+import { useRef, useState } from 'react'
+import { useEffectUpdate } from '../hooks/useEffectUpdate.js'
+import { toyService } from '../services/toy.service.js'
+import { utilService } from '../services/util.service.js'
+import ToySort from './ToySort.jsx'
 
-const LABELS = [
-  'On wheels',
-  'Box game',
-  'Art',
-  'Baby',
-  'Doll',
-  'Puzzle',
-  'Outdoor',
-  'Battery Powered'
-]
+const ALL_LABELS_VALUE = '__ALL__'
 
 export function ToyFilter({ filterBy, onSetFilter }) {
-  const [localFilter, setLocalFilter] = useState(filterBy)
+  const [filterByToEdit, setFilterByToEdit] = useState({
+    name: '',
+    inStock: '',
+    labels: [],
+    sortBy: { type: '', sortDir: 1 },
+    ...filterBy,
+    inStock:
+      filterBy?.inStock === true ? 'true' :
+      filterBy?.inStock === false ? 'false' : ''
+  })
 
-  const DEBOUNCE_MS = 400
-  const debouncedSetName = useMemo(
-    () => utilService.debounce((name) => onSetFilter({ name }), DEBOUNCE_MS),
-    [onSetFilter, DEBOUNCE_MS]
+  const debouncedOnSetFilter = useRef(
+    utilService.debounce((nextFilter) => {
+      const normalized = {
+        ...nextFilter,
+        inStock:
+          nextFilter.inStock === 'true' ? true :
+          nextFilter.inStock === 'false' ? false : null,
+        labels: Array.isArray(nextFilter.labels) ? nextFilter.labels : [],
+        sortBy: nextFilter.sortBy?.type
+          ? { type: nextFilter.sortBy.type, sortDir: Number(nextFilter.sortBy.sortDir) === -1 ? -1 : 1 }
+          : { type: '', sortDir: 1 },
+      }
+      onSetFilter(normalized)
+    }, 300)
   )
 
-  useEffect(() => {
-    setLocalFilter(filterBy)
-  }, [filterBy])
+  useEffectUpdate(() => {
+    debouncedOnSetFilter.current(filterByToEdit)
+  }, [filterByToEdit])
 
-  function onNameChange({ target }) {
-    const name = target.value
-    setLocalFilter(prev => ({ ...prev, name }))
-    debouncedSetName(name)
+  function handleChange({ target }) {
+    let { value, name: field, type, multiple, selectedOptions } = target
+    if (type === 'select-multiple' || multiple) {
+      const values = Array.from(selectedOptions, opt => opt.value)
+      if (values.includes(ALL_LABELS_VALUE)) {
+        const next = { ...filterByToEdit, labels: [] }
+        setFilterByToEdit(next)
+        debouncedOnSetFilter.current(next)
+        return
+      }
+      value = values.filter(Boolean)
+    }
+    if (type === 'number') value = +value || ''
+    setFilterByToEdit(prev => ({ ...prev, [field]: value }))
   }
 
-  function onInStockChange({ target }) {
-    const val = target.value
-    const inStock =
-      val === 'all' ? null :
-      val === 'in'  ? true :
-      val === 'out' ? false : null
-
-    setLocalFilter(prev => ({ ...prev, inStock }))
-    onSetFilter({ inStock })
+  function onSubmitFilter(ev) {
+    ev.preventDefault()
+    debouncedOnSetFilter.current(filterByToEdit)
   }
 
-  function onToggleLabel(label) {
-    const curr = new Set(localFilter.labels || [])
-    if (curr.has(label)) curr.delete(label)
-    else curr.add(label)
-    const labels = [...curr]
-    setLocalFilter(prev => ({ ...prev, labels }))
-    onSetFilter({ labels })
+  function onChangeSort(nextSortBy) {
+    setFilterByToEdit(prev => ({ ...prev, sortBy: nextSortBy }))
   }
 
-  function onSortChange({ target }) {
-    const sortBy = target.value
-    setLocalFilter(prev => ({ ...prev, sortBy }))
-    onSetFilter({ sortBy })
-  }
+  const { name, inStock, labels = [], sortBy } = filterByToEdit
+  const toyLabels = toyService.getToyLabels()
 
   return (
     <section className="toy-filter">
-      <label className="group">
-        <span>Search:</span>
+      <h3>Toys Filter/Sort</h3>
+
+      <form onSubmit={onSubmitFilter} className="filter-form flex align-center" style={{ gap: '.5rem', flexWrap: 'wrap' }}>
         <input
+          onChange={handleChange}
+          value={name}
           type="text"
+          placeholder="Search by name"
           name="name"
-          value={localFilter.name}
-          placeholder="Search toys by name…"
-          onChange={onNameChange}
         />
-      </label>
 
-            <label className="group">
-        <span>Sort by:</span>
-        <select value={localFilter.sortBy || ''} onChange={onSortChange}>
-          <option value="">None</option>
-          <option value="name">Name (A→Z)</option>
-          <option value="price">Price (Low→High)</option>
-          <option value="created">Created (New→Old)</option>
+        <select name="inStock" value={inStock} onChange={handleChange}>
+          <option value="">All</option>
+          <option value="true">In Stock</option>
+          <option value="false">Not in stock</option>
         </select>
-      </label>
 
-      <label className="group">
-        <span>Stock:</span>
         <select
-          value={
-            localFilter.inStock === null || localFilter.inStock === undefined
-              ? 'all'
-              : localFilter.inStock ? 'in' : 'out'
-          }
-          onChange={onInStockChange}
+          multiple
+          name="labels"
+          value={labels}
+          onChange={handleChange}
+          size={Math.min(8, (toyLabels?.length || 0) + 1)}
+          title="Hold Ctrl/Cmd to select multiple"
         >
-          <option value="all">All</option>
-          <option value="in">In stock</option>
-          <option value="out">Out of stock</option>
-        </select>
-      </label>
-
-      <fieldset className="labels">
-        <legend>Labels</legend>
-        <ul className="labels-grid clean-list">
-          {LABELS.map(label => (
-            <li key={label}>
-              <label className="group">
-                <input
-                  type="checkbox"
-                  checked={localFilter.labels?.includes(label) || false}
-                  onChange={() => onToggleLabel(label)}
-                />
-                {label}
-              </label>
-            </li>
+          <option value={ALL_LABELS_VALUE}>Labels</option>
+          {toyLabels.map(label => (
+            <option key={label} value={label}>
+              {label}
+            </option>
           ))}
-        </ul>
-      </fieldset>
+        </select>
+      </form>
 
+      <ToySort value={sortBy || { type: '', sortDir: 1 }} onChange={onChangeSort} />
     </section>
   )
 }
