@@ -11,22 +11,33 @@ import {
 } from "../reducers/toy.reducer.js"
 import { store } from "../store.js"
 
-export function loadToys() {
+export async function loadToys() {
     const filterBy = store.getState().toyModule.filterBy
     store.dispatch({ type: SET_IS_LOADING, isLoading: true })
-
-    return toyService.query(filterBy)
-        .then(toys => {
-            store.dispatch({ type: SET_TOYS, toys })
-        })
-        .catch(err => {
-            console.log('toy action -> Cannot load toys', err)
-            throw err
-        })
-        .finally(() => {
+    try {
+        const toys = await toyService.query(filterBy)
+        store.dispatch({ type: SET_TOYS, toys })
+    } catch (err) {
+        console.log('toy action -> Cannot load toys', err)
+        throw err
+    } finally {
+        setTimeout(() => {
             store.dispatch({ type: SET_IS_LOADING, isLoading: false })
-        })
+        }, 300)
+    }
 }
+//     return toyService.query(filterBy)
+//         .then(toys => {
+//             store.dispatch({ type: SET_TOYS, toys })
+//         })
+//         .catch(err => {
+//             console.log('toy action -> Cannot load toys', err)
+//             throw err
+//         })
+//         .finally(() => {
+//             store.dispatch({ type: SET_IS_LOADING, isLoading: false })
+//         })
+// }
 
 export function removeToy(toyId) {
     return toyService.remove(toyId)
@@ -53,18 +64,17 @@ export function removeToyOptimistic(toyId) {
         })
 }
 
-export function saveToy(toy) {
+export async function saveToy(toy) {
     const type = toy._id ? UPDATE_TOY : ADD_TOY
-    return toyService.save(toy)
-        .then(savedToy => {
-            console.log('savedToy:', savedToy)
-            store.dispatch({ type, toy: savedToy })
-            return savedToy
-        })
-        .catch(err => {
-            console.log('toy action -> Cannot save toy', err)
-            throw err
-        })
+    try {
+        const savedToy = await toyService.save(toy)
+        store.dispatch({ type, toy: savedToy })
+        return savedToy
+    } catch (error) {
+        console.log('toy action -> Cannot save toy', error)
+        throw err
+    }
+
 }
 
 export function setFilterBy(filterBy) {
