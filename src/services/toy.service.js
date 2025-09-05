@@ -1,4 +1,3 @@
-// src/services/toy.service.js
 import { storageService } from './async-storage.service.js'
 
 const STORAGE_KEY = 'toyDB'
@@ -11,10 +10,9 @@ const labels = [
     'Doll',
     'Puzzle',
     'Outdoor',
-    'Battery Powered'
+    'Battery Powered',
 ]
 
-// seed initial data once (localStorage)
 _createToys()
 
 export const toyService = {
@@ -24,6 +22,7 @@ export const toyService = {
     save,
     getDefaultFilter,
     getEmptyToy,
+    getToyLabels,
 }
 
 function query(filterBy = {}) {
@@ -35,28 +34,29 @@ function query(filterBy = {}) {
             res = res.filter((toy) => regex.test(toy.name))
         }
 
-        if (filterBy.inStock !== undefined && filterBy.inStock !== null) {
+        if (filterBy.inStock !== undefined && filterBy.inStock !== null && filterBy.inStock !== '') {
             res = res.filter((toy) => toy.inStock === filterBy.inStock)
         }
 
         if (Array.isArray(filterBy.labels) && filterBy.labels.length) {
-            res = res.filter((toy) => filterBy.labels.every((l) => toy.labels.includes(l)))
+            res = res.filter((toy) => toy.labels?.some((l) => filterBy.labels.includes(l)))
         }
 
-        if (filterBy.sortBy) {
-            switch (filterBy.sortBy) {
-                case 'name':
-                    res.sort((a, b) => a.name.localeCompare(b.name))
-                    break
-                case 'price':
-                    res.sort((a, b) => a.price - b.price)
-                    break
-                case 'created':
-                    res.sort((a, b) => b.createdAt - a.createdAt)
-                    break
-                default:
-                    break
-            }
+        if (filterBy.sortBy?.type) {
+            const { type, sortDir } = filterBy.sortBy
+            const dir = Number(sortDir) === -1 ? -1 : 1
+            res.sort((a, b) => {
+                switch (type) {
+                    case 'name':
+                        return a.name.localeCompare(b.name) * dir
+                    case 'price':
+                        return (a.price - b.price) * dir
+                    case 'createdAt':
+                        return (a.createdAt - b.createdAt) * dir
+                    default:
+                        return 0
+                }
+            })
         }
 
         return res
@@ -94,7 +94,11 @@ function getEmptyToy() {
 }
 
 function getDefaultFilter() {
-    return { name: '', inStock: null, labels: [], sortBy: '' }
+    return { name: '', inStock: null, labels: [], sortBy: { type: '', sortDir: 1 } }
+}
+
+function getToyLabels() {
+    return [...labels]
 }
 
 function _createToys() {
