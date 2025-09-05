@@ -1,95 +1,163 @@
-import { useEffect, useState } from "react"
-import { toyService } from "../services/toy.service.js"
-import { showErrorMsg, showSuccessMsg } from "../services/event-bus.service.js"
-import { saveToy } from "../store/actions/toy.actions.js"
-import { Link, useNavigate, useParams } from "react-router-dom"
+import {
+    Button,
+    Checkbox,
+    FormControl,
+    FormControlLabel,
+    InputLabel,
+    ListItemText,
+    MenuItem,
+    Select,
+    TextField,
+} from '@mui/material'
+
+import { Field, Form, Formik } from 'formik'
+import { useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+import * as Yup from 'yup'
+import { useConfirmTabClose } from '../hooks/useConfirmTabClose'
+import { showErrorMsg, showSuccessMsg } from '../services/event-bus.service'
+import { toyService } from '../services/toy.service'
 
 export default function ToyEdit() {
-  const navigate = useNavigate()
-  const [toyToEdit, setToyToEdit] = useState(toyService.getEmptyToy())
-  const { toyId } = useParams()
+    const [toyToEdit, setToyToEdit] = useState(toyService.getEmptyToy())
 
-  useEffect(() => {
-    if (toyId) loadToy()
-  }, [])
+    const { toyId } = useParams()
+    const navigate = useNavigate()
+    const setHasUnsavedChanges = useConfirmTabClose()
 
-  function loadToy() {
-    toyService.get(toyId)
-      .then(toy => setToyToEdit(toy))
-      .catch(() => navigate('/toy'))
-  }
+    const labels = toyService.getToyLabels()
 
-  function handleChange({ target }) {
-    let { value, type, name: field, checked } = target
-    if (type === 'number') value = +value
-    if (type === 'checkbox') value = checked
-    setToyToEdit(prev => ({ ...prev, [field]: value }))
-  }
+    useEffect(() => {
+        if (toyId) loadToy()
+    }, [])
 
-  function onSaveToy(ev) {
-    ev.preventDefault()
-    if (!toyToEdit.name) return showErrorMsg('Name is required')
-    if (!toyToEdit.price) toyToEdit.price = 1
+    function loadToy() {
+        toyService.get(toyId)
+            .then(setToyToEdit)
+            .catch(err => {
+                console.log('Had issued in toy edit:', err)
+                navigate('/toy')
+                showErrorMsg('Toy not found!')
+            })
+    }
 
-    saveToy(toyToEdit)
-      .then(() => {
-        showSuccessMsg('Toy Saved!')
-        navigate('/toy')
-      })
-      .catch(() => showErrorMsg('Had issues in toy save'))
-  }
+    const ToySchema = Yup.object().shape({
+        name: Yup.string()
+            .required('Name is required')
+            .min(2, 'Too Short!')
+            .max(50, 'Too Long!'),
+        price: Yup.number()
+            .required('Price is required')
+            .min(1, 'Price must be at least 1'),
+        inStock: Yup.boolean(),
+        labels: Yup.array().of(Yup.string()),
+    })
 
-  return (
-    <section className="toy-edit">
-      <h2>{toyToEdit._id ? 'Edit' : 'Add'} Toy</h2>
+    function customHandleChange(ev, handleChange) {
+        handleChange(ev)
+        setHasUnsavedChanges(true)
+    }
 
-      <form onSubmit={onSaveToy} className="toy-edit__form">
-        <label htmlFor="name">Name :</label>
-        <input
-          type="text"
-          name="name"
-          id="name"
-          placeholder="Enter name..."
-          value={toyToEdit.name}
-          onChange={handleChange}
-        />
+    function onSaveToy(toyToSave, { resetForm }) {
+        toyService.save(toyToSave)
+            .then(() => {
+                showSuccessMsg('Toy saved successfully')
+                navigate('/toy')
+            })
+            .catch(err => {
+                console.log('Cannot save toy', err)
+                showErrorMsg('Cannot save toy')
+            })
+            .finally(() => {
+                resetForm()
+            })
+    }
 
-        <label htmlFor="price">Price :</label>
-        <input
-          type="number"
-          name="price"
-          id="price"
-          placeholder="Enter price"
-          value={toyToEdit.price}
-          onChange={handleChange}
-          min="0"
-        />
+    return (
+        <section className="toy-edit">
+            <h2>{toyToEdit._id ? 'Edit' : 'Add'} Toy</h2>
 
-        <label className="checkbox-line">
-          <input
-            type="checkbox"
-            name="inStock"
-            checked={!!toyToEdit.inStock}
-            onChange={handleChange}
-          />
-          In stock
-        </label>
+            <Formik
+                enableReinitialize
+                initialValues={toyToEdit}
+                validationSchema={ToySchema}
+                onSubmit={onSaveToy}
+            >
+                {({ errors, touched, values, handleChange, setFieldValue }) => (
+                    <Form>
+                        <Field
+                            as={TextField}
+                            label="Name"
+                            variant="outlined"
+                            name="name"
+                            required
+                            margin="normal"
+                            error={touched.name && !!errors.name}
+                            helperText={touched.name && errors.name}
+                            onChange={e => customHandleChange(e, handleChange)}
+                            value={values.name}
+                        />
 
-        <label htmlFor="imgUrl">Image URL :</label>
-        <input
-          type="text"
-          name="imgUrl"
-          id="imgUrl"
-          placeholder="https://..."
-          value={toyToEdit.imgUrl}
-          onChange={handleChange}
-        />
+                        <Field
+                            as={TextField}
+                            label="Price"
+                            variant="outlined"
+                            type="number"
+                            name="price"
+                            required
+                            margin="normal"
+                            inputProps={{ min: 1 }}
+                            error={touched.price && !!errors.price}
+                            helperText={touched.price && errors.price}
+                            onChange={e => customHandleChange(e, handleChange)}
+                            value={values.price}
+                        />
 
-        <div className="form-actions">
-          <button className="btn primary">{toyToEdit._id ? 'Save' : 'Add'}</button>
-          <Link to="/toy" className="btn">Cancel</Link>
-        </div>
-      </form>
-    </section>
-  )
+                        <FormControl margin="normal" style={{ minWidth: '20vw' }} variant="outlined">
+                            <InputLabel id="labels-label">Labels</InputLabel>
+                            <Select
+                                labelId="labels-label"
+                                id="labels"
+                                multiple
+                                name="labels"
+                                value={values.labels}
+                                onChange={ev => {
+                                    setFieldValue('labels', ev.target.value)
+                                }}
+                                renderValue={selected => selected.join(', ')}
+                                label="Labels"
+                            >
+                                {labels.map(label => (
+                                    <MenuItem key={label} value={label}>
+                                        <Checkbox checked={values.labels.includes(label)} />
+                                        <ListItemText primary={label} />
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    name="inStock"
+                                    checked={values.inStock}
+                                    onChange={e => customHandleChange(e, handleChange)}
+                                />
+                            }
+                            label="In stock"
+                        />
+
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            type="submit"
+                        >
+                            {toyToEdit._id ? 'Save' : 'Add'}
+                        </Button>
+                    </Form>
+                )}
+            </Formik>
+        </section>
+    )
 }
+
