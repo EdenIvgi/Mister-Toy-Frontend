@@ -14,54 +14,43 @@ import { store } from "../store.js"
 export async function loadToys() {
     const filterBy = store.getState().toyModule.filterBy
     store.dispatch({ type: SET_IS_LOADING, isLoading: true })
+
     try {
         const toys = await toyService.query(filterBy)
         store.dispatch({ type: SET_TOYS, toys })
-    } catch (err) {
-        console.log('toy action -> Cannot load toys', err)
-        throw err
+        return toys
+    } catch (error) {
+        console.error('toy action -> Cannot load toys', error)
+        throw error
     } finally {
         setTimeout(() => {
             store.dispatch({ type: SET_IS_LOADING, isLoading: false })
         }, 300)
     }
 }
-//     return toyService.query(filterBy)
-//         .then(toys => {
-//             store.dispatch({ type: SET_TOYS, toys })
-//         })
-//         .catch(err => {
-//             console.log('toy action -> Cannot load toys', err)
-//             throw err
-//         })
-//         .finally(() => {
-//             store.dispatch({ type: SET_IS_LOADING, isLoading: false })
-//         })
-// }
 
-export function removeToy(toyId) {
-    return toyService.remove(toyId)
-        .then(() => {
-            store.dispatch({ type: REMOVE_TOY, toyId })
-        })
-        .catch(err => {
-            console.log('toy action -> Cannot remove toy', err)
-            throw err
-        })
+export async function removeToy(toyId) {
+    try {
+        await toyService.remove(toyId)
+        store.dispatch({ type: REMOVE_TOY, toyId })
+        return toyId
+    } catch (error) {
+        console.error('toy action -> Cannot remove toy', error)
+        throw error
+    }
 }
 
-export function removeToyOptimistic(toyId) {
+export async function removeToyOptimistic(toyId) {
     store.dispatch({ type: REMOVE_TOY, toyId })
-
-    return toyService.remove(toyId)
-        .then(() => {
-            showSuccessMsg('Removed Toy!')
-        })
-        .catch(err => {
-            store.dispatch({ type: TOY_UNDO })
-            console.log('toy action -> Cannot remove toy', err)
-            throw err
-        })
+    try {
+        await toyService.remove(toyId)
+        showSuccessMsg('Removed Toy!')
+        return toyId
+    } catch (error) {
+        store.dispatch({ type: TOY_UNDO })
+        console.error('toy action -> Cannot remove toy', error)
+        throw error
+    }
 }
 
 export async function saveToy(toy) {
@@ -71,10 +60,9 @@ export async function saveToy(toy) {
         store.dispatch({ type, toy: savedToy })
         return savedToy
     } catch (error) {
-        console.log('toy action -> Cannot save toy', error)
-        throw err
+        console.error('toy action -> Cannot save toy', error)
+        throw error
     }
-
 }
 
 export function setFilterBy(filterBy) {
