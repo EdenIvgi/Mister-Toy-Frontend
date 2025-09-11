@@ -68,7 +68,6 @@ export function ToyFilter({ filterBy, onSetFilter }) {
 
   return (
     <section className="toy-filter">
-      <h3>Toys Filter/Sort</h3>
 
       <form onSubmit={onSubmitFilter} className="filter-form flex align-center" style={{ gap: '.5rem', flexWrap: 'wrap' }}>
         <input
@@ -90,7 +89,7 @@ export function ToyFilter({ filterBy, onSetFilter }) {
           name="labels"
           value={labels}
           onChange={handleChange}
-          size={Math.min(8, (toyLabels?.length || 0) + 1)}
+          size={Math.min(4, (toyLabels?.length || 0) + 1)}
           title="Hold Ctrl/Cmd to select multiple"
         >
           <option value={ALL_LABELS_VALUE}>Labels</option>
